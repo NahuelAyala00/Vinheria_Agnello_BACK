@@ -53,3 +53,23 @@ class VinhoResponse(BaseModel):
     model_config = {
         "from_attributes": True
     }
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+    usuario_id: int
+
+class TokenData(BaseModel):
+    email: Optional[str] = None
+
+class GoogleLoginRequest(BaseModel):
+    credential: str  # JWT token do Google
+
+class UsuarioUpdate(BaseModel):
+    nome: Optional[str] = None
+    email: Optional[str] = None
+    senha: Optional[str] = None
+
+class PasswordChange(BaseModel):
+    senha_atual: str
+    nova_senha: str

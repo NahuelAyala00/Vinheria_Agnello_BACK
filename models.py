@@ -1,20 +1,27 @@
-from sqlalchemy import Column, Integer, String, Float, ForeignKey, Text, TIMESTAMP
+from sqlalchemy import Column, Integer, String, Float, ForeignKey, DateTime, Boolean, Text
 from sqlalchemy.orm import relationship
+from sqlalchemy.sql import func
 from database import Base
 
-
+# ------------------- Usuário -------------------
 class Usuario(Base):
     __tablename__ = "usuarios"
+    __table_args__ = {"extend_existing": True}  # Evita conflito de tabela duplicada
 
     id = Column(Integer, primary_key=True, index=True)
     nome = Column(String(100), nullable=False)
-    email = Column(String(150), unique=True, nullable=False)
-    senha = Column(String(200), nullable=False)
+    email = Column(String(150), unique=True, index=True, nullable=False)
+    senha = Column(String(255), nullable=True)  # Nullable para usuários do Google
+    google_id = Column(String(100), unique=True, nullable=True)
+    is_google_user = Column(Boolean, default=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
     avaliacoes = relationship("Avaliacao", back_populates="usuario")
     carrinho = relationship("Carrinho", back_populates="usuario", uselist=False)
 
 
+# ------------------- Vinho -------------------
 class Vinho(Base):
     __tablename__ = "vinhos"
 
@@ -27,6 +34,8 @@ class Vinho(Base):
     imagem = Column(String, default="")
     avaliacoes = relationship("Avaliacao", back_populates="vinho")
 
+
+# ------------------- Avaliação -------------------
 class Avaliacao(Base):
     __tablename__ = "avaliacoes"
 
@@ -40,6 +49,7 @@ class Avaliacao(Base):
     vinho = relationship("Vinho", back_populates="avaliacoes")
 
 
+# ------------------- Carrinho -------------------
 class Carrinho(Base):
     __tablename__ = "carrinhos"
 
@@ -50,6 +60,7 @@ class Carrinho(Base):
     itens = relationship("ItemCarrinho", back_populates="carrinho")
 
 
+# ------------------- ItemCarrinho -------------------
 class ItemCarrinho(Base):
     __tablename__ = "itens_carrinho"
 
